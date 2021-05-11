@@ -27,10 +27,13 @@ public class TileController : MonoBehaviour
     private SpriteRenderer render;
     private bool isSelected = false;
 
+    private GameFlowManager game;
+
     private void Awake()
     {
         board = BoardManager.Instance;
         render = GetComponent<SpriteRenderer>();
+        game = GameFlowManager.Instance;
     }
 
     private void Start()
@@ -41,7 +44,7 @@ public class TileController : MonoBehaviour
     private void OnMouseDown()
     {
         // Non Selectable conditions
-        if (render.sprite == null || board.IsAnimating)
+        if (render.sprite == null || board.IsAnimating || game.IsGameOver)
         {
             return;
         }
@@ -61,7 +64,7 @@ public class TileController : MonoBehaviour
 
             else
             {
-                // is this an adjacent tiles?
+                // is this an adjacent tile?
                 if (GetAllAdjacentTiles().Contains(previousSelected))
                 {
                     TileController otherTile = previousSelected;
