@@ -215,6 +215,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2041877646}
+  - component: {fileID: 2041877647}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -236,3 +237,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2041877647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2041877645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b367e8042cf903847be55b9c2a5002de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: {x: 8, y: 4}
+  offsetTile: {x: 0.1, y: 0.1}
+  offsetBoard: {x: 0, y: -0.25}
+  tileTypes:
+  - {fileID: 21300000, guid: 6301d3e9d83890749bb576d5d028cc79, type: 3}
+  - {fileID: 21300000, guid: d5f6b7f16a9b5cb4bb98583588b49789, type: 3}
+  - {fileID: 21300000, guid: 821c5f87606d10048a1962b79dba7eaa, type: 3}
+  - {fileID: 21300000, guid: fcabe9795df67be43b896ea94a7289f7, type: 3}
+  - {fileID: 21300000, guid: 0cec49529ddc72d42818aae09bc9ff41, type: 3}
+  - {fileID: 21300000, guid: e6e3409734d008740b5b08ebecca498b, type: 3}
+  tilePrefab: {fileID: 4585277017751246418, guid: 443056b590319cd4a877cf2802afd2b2, type: 3}
