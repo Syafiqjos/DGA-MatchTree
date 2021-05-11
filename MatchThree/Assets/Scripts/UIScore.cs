@@ -1,18 +1,26 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class UIScore : MonoBehaviour
 {
 
-    // Use this for initialization
-    void Start()
-    {
+    public Text highScore;
+    public Text currentScore;
 
+    private void Update()
+    {
+        highScore.text = ScoreManager.Instance.HighScore.ToString();
+        currentScore.text = ScoreManager.Instance.CurrentScore.ToString();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Show()
     {
+        gameObject.SetActive(true);
+    }
 
+    public void Hide()
+    {
+        gameObject.SetActive(false);
     }
 }

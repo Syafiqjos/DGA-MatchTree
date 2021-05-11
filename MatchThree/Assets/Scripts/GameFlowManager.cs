@@ -31,14 +31,18 @@ public class GameFlowManager : MonoBehaviour
 
     private bool isGameOver = false;
 
-    private void Start()
-    {
-        isGameOver = false;
-    }
+    [Header("UI")]
+    public UIGameOver GameOverUI;
 
     public void GameOver()
     {
         isGameOver = true;
         ScoreManager.Instance.SetHighScore();
+        GameOverUI.Show();
+    }
+
+    private void Start()
+    {
+        isGameOver = false;
     }
 }
