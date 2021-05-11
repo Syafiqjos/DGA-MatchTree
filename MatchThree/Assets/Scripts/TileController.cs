@@ -1,13 +1,31 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class TileController : MonoBehaviour
 {
+    private static readonly Color selectedColor = new Color(0.5f, 0.5f, 0.5f);
+    private static readonly Color normalColor = Color.white;
+
+    private static readonly float moveDuration = 0.5f;
+    private static readonly float destroyBigDuration = 0.1f;
+    private static readonly float destroySmallDuration = 0.4f;
+
+    private static readonly Vector2 sizeBig = Vector2.one * 1.2f;
+    private static readonly Vector2 sizeSmall = Vector2.zero;
+    private static readonly Vector2 sizeNormal = Vector2.one;
+
+    private static readonly Vector2[] adjacentDirection = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
+
+    private static TileController previousSelected = null;
+
     public int id;
+
+    public bool IsDestroyed { get; private set; }
 
     private BoardManager board;
     private SpriteRenderer render;
+    private bool isSelected = false;
 
     private void Awake()
     {
@@ -15,23 +33,10 @@ public class TileController : MonoBehaviour
         render = GetComponent<SpriteRenderer>();
     }
 
-    public void ChangeId(int id, int x, int y)
+    private void Start()
     {
-        render.sprite = board.tileTypes[id];
-        this.id = id;
-
-        name = "TILE_" + id + " (" + x + ", " + y + ")";
+        IsDestroyed = false;
     }
-
-
-    private static readonly Color selectedColor = new Color(0.5f, 0.5f, 0.5f);
-    private static readonly Color normalColor = Color.white;
-
-    private static TileController previousSelected = null;
-
-    private bool isSelected = false;
-
-
 
     private void OnMouseDown()
     {
@@ -56,7 +61,7 @@ public class TileController : MonoBehaviour
 
             else
             {
-                // is this an adjacent tile?
+                // is this an adjacent tiles?
                 if (GetAllAdjacentTiles().Contains(previousSelected))
                 {
                     TileController otherTile = previousSelected;
@@ -66,7 +71,7 @@ public class TileController : MonoBehaviour
                     SwapTile(otherTile, () => {
                         if (board.GetAllMatches().Count > 0)
                         {
-                            Debug.Log("MATCH FOUND");
+                            board.Process();
                         }
                         else
                         {
@@ -84,9 +89,12 @@ public class TileController : MonoBehaviour
         }
     }
 
-    public void SwapTile(TileController otherTile, System.Action onCompleted = null)
+    public void ChangeId(int id, int x, int y)
     {
-        StartCoroutine(board.SwapTilePosition(this, otherTile, onCompleted));
+        render.sprite = board.tileTypes[id];
+        this.id = id;
+
+        name = "TILE_" + id + " (" + x + ", " + y + ")";
     }
 
     #region Select & Deselect
@@ -107,9 +115,12 @@ public class TileController : MonoBehaviour
 
     #endregion
 
+    #region Swapping & Moving
 
-    private static readonly float moveDuration = 0.5f;
-
+    public void SwapTile(TileController otherTile, System.Action onCompleted = null)
+    {
+        StartCoroutine(board.SwapTilePosition(this, otherTile, onCompleted));
+    }
 
     public IEnumerator MoveTilePosition(Vector2 targetPosition, System.Action onCompleted)
     {
@@ -132,7 +143,7 @@ public class TileController : MonoBehaviour
         onCompleted?.Invoke();
     }
 
-    private static readonly Vector2[] adjacentDirection = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
+    #endregion
 
     #region Adjacent
 
@@ -161,10 +172,6 @@ public class TileController : MonoBehaviour
     }
 
     #endregion
-
-    public bool IsDestroyed { get; private set; }
-
-
 
     #region Check Match
 
@@ -236,6 +243,55 @@ public class TileController : MonoBehaviour
         }
 
         return matchingTiles;
+    }
+
+    #endregion
+
+    #region Destroy & Generate
+
+    public IEnumerator SetDestroyed(System.Action onCompleted)
+    {
+        IsDestroyed = true;
+        id = -1;
+        name = "TILE_NULL";
+
+        Vector2 startSize = transform.localScale;
+        float time = 0.0f;
+
+        while (time < destroyBigDuration)
+        {
+            transform.localScale = Vector2.Lerp(startSize, sizeBig, time / destroyBigDuration);
+            time += Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        transform.localScale = sizeBig;
+
+        startSize = transform.localScale;
+        time = 0.0f;
+
+        while (time < destroySmallDuration)
+        {
+            transform.localScale = Vector2.Lerp(startSize, sizeSmall, time / destroySmallDuration);
+            time += Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        transform.localScale = sizeSmall;
+
+        render.sprite = null;
+
+        onCompleted?.Invoke();
+    }
+
+    public void GenerateRandomTile(int x, int y)
+    {
+        transform.localScale = sizeNormal;
+        IsDestroyed = false;
+
+        ChangeId(Random.Range(0, board.tileTypes.Count), x, y);
     }
 
     #endregion
